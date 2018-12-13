@@ -1,5 +1,5 @@
 # U-net in tensorflow
-- An implementation of the U-net model for segmantic segmenation. The model architecture is slightly modified, such as the number of channels for some layers.
+- An customed implementation of the U-net model for segmantic segmenation. The model architecture is slightly modified, such as the number of channels for some layers. Most important, the loss function is a combination of pixelwise cross-entropy loss and IOU loss, which is different from loss used in the original paper.
 - This is a project on Remote sensing image segmentation, which is a five-class classification problem.
 
 ## Training
