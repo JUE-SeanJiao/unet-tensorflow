@@ -45,28 +45,18 @@ def upsampling_2d(tensor, name, size=(2, 2)):
     h = h_multi * h_
     w = w_multi * w_
     target = tf.image.resize_nearest_neighbor(tensor, size=(h, w), name='upsample_{}'.format(name))
-
     return target
 
 
 def upsampling_concat(input_A, input_B, name):
     upsampling = upsampling_2d(input_A, name=name, size=(2, 2))
     up_concat = tf.concat([upsampling, input_B], axis=-1, name='up_concat_{}'.format(name))
-
     return up_concat
 
 def unet(input,training):
-    #归一化[-1,1]
     input = input/127.5 - 1
-    # r_g=tf.expand_dims(input[...,0]/(input[...,1]+1),-1)
-    # r_b=tf.expand_dims(input[...,0]/(input[...,2]+1),-1)
-    # g_b=tf.expand_dims(input[...,1]/(input[...,2]+1),-1)
-    #
-    # input = tf.concat([r_g,r_b,g_b],axis=-1)
 
-
-    #input = tf.layers.conv2d(input,3,(1,1),name = 'color')   #filters:一个整数，输出空间的维度，也就是卷积核的数量
-    conv1, pool1 = conv_conv_pool(input, [8, 8], training, name=1)       #卷积两次输出维度64维
+    conv1, pool1 = conv_conv_pool(input, [8, 8], training, name=1)       #
     conv2, pool2 = conv_conv_pool(pool1, [16, 16], training, name=2)
     conv3, pool3 = conv_conv_pool(pool2, [32, 32], training, name=3)
     conv4, pool4 = conv_conv_pool(pool3, [64, 64], training, name=4)
@@ -82,7 +72,6 @@ def unet(input,training):
     conv9 = conv_conv_pool(up9, [8, 8], training, pool=False, name=9)
 
     return tf.layers.conv2d(conv9, n_class, (1, 1), name='final', activation=None, padding='same')
-    # return tf.layers.conv2d(conv9, 1, (1, 1), name='final', activation=None, padding='same')
 
 def depthwise_unet(input, training):
     input = input / 127.5 - 1
@@ -102,7 +91,6 @@ def depthwise_unet(input, training):
     up9 = upsampling_concat(conv8, conv1, name=9)
     conv9 = conv_conv_pool(up9, [8, 8], training, pool=False, name=9)
 
-    # return tf.layers.conv2d(conv9, 1, (1, 1), name='final', activation=None, padding='same')
     return tf.layers.conv2d(conv9, n_class, (1, 1), name='final', activation=None, padding='same')
 
 
